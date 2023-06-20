@@ -11,6 +11,14 @@ struct ContentView: View {
     
     @State private var launchAnimation : Bool = false
     @State private var imageScale : CGFloat = 1
+    @State private var imageOffset : CGSize = .zero
+    
+    func resetImage() {
+        withAnimation(.linear(duration: 1)) {
+            imageScale = 1
+            imageOffset = .zero
+        }
+    }
     
     var body: some View {
         
@@ -25,13 +33,27 @@ struct ContentView: View {
                     .padding()
                     .shadow(color: .black.opacity(0.2), radius: 12, x: 2, y: 2)
                     .opacity(launchAnimation ? 1 : 0)
+                    .offset(imageOffset)
                     .scaleEffect(imageScale)
+                    .gesture(DragGesture(coordinateSpace: .global)
+                        .onChanged({ value in
+                            withAnimation(.linear(duration: 1)) {
+                                imageOffset = value.translation
+                            }
+                        })
+                            .onEnded({ _ in
+                                if imageScale <= 1 {
+                                   resetImage()
+                                }
+                            })
+                    
+                    )
                     .onTapGesture(count: 2, perform: {
                         withAnimation(.spring()) {
                             if imageScale == 1 {
                                 imageScale = 5
                             } else {
-                                imageScale = 1
+                                resetImage()
                             }
                         }
                     })
