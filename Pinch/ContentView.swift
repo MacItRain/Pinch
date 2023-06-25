@@ -12,6 +12,8 @@ struct ContentView: View {
     @State private var launchAnimation : Bool = false
     @State private var imageScale : CGFloat = 1
     @State private var imageOffset : CGSize = .zero
+    @State private var isThumbnailOpen : Bool = false
+    @State private var switchImage : Bool = false
     
     func resetImage() {
         withAnimation(.linear(duration: 1)) {
@@ -28,7 +30,7 @@ struct ContentView: View {
                     
                     Color.clear
                     
-                    Image("magazine-front-cover")
+                    Image(switchImage ? "magazine-back-cover" : "magazine-front-cover")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .cornerRadius(10)
@@ -59,6 +61,81 @@ struct ContentView: View {
                                 }
                             }
                         })
+                        .overlay(alignment : .topTrailing) {
+                            if isThumbnailOpen {
+                                HStack {
+                                        Image(systemName:"chevron.compact.right")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .padding(EdgeInsets(top: 26, leading: 8, bottom: 26, trailing: 8))
+                                            .foregroundColor(.secondary)
+                                            .onTapGesture {
+                                                withAnimation(.spring()) {
+                                                    isThumbnailOpen.toggle()
+                                                }
+                                            }
+                                        
+                                    Spacer()
+                                        
+                                    Button {
+                                        
+                                        withAnimation(.linear(duration: 1)) {
+                                            switchImage = false
+                                        }
+                                    
+                                    } label: {
+                                        Image("thumb-magazine-front-cover")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .cornerRadius(8)
+                                    }
+
+                                        
+                                    Spacer()
+                                        
+                                    Button {
+                                        
+                                        withAnimation(.linear(duration: 1)) {
+                                            switchImage = true
+                                        }
+                                        
+                                    } label: {
+                                        Image("thumb-magazine-back-cover")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .cornerRadius(8)
+                                    }
+
+                                        
+                                    Spacer()
+                                        
+                                    }
+                                    .padding(8)
+                                    .frame(width: 240, height: UIScreen.main.bounds.height / 7)
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(8)
+                                
+                            } else {
+                                
+                                HStack {
+                                    Image(systemName:"chevron.compact.left")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .padding(EdgeInsets(top: 16, leading: 8, bottom: 12, trailing: 8))
+                                        .foregroundColor(.secondary)
+                                        .onTapGesture {
+                                            withAnimation(.spring()) {
+                                                isThumbnailOpen.toggle()
+                                            }
+                                    }
+                                }
+                                .padding(8)
+                                .frame(width: 45, height: UIScreen.main.bounds.height / 7)
+                                .background(.ultraThinMaterial)
+                                .cornerRadius(8)
+                                
+                            }
+                        }
                 }
                 .onAppear {
                     withAnimation(.linear(duration: 1.0)) {
